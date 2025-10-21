@@ -22,11 +22,11 @@ exports.handler = async (event, context) => {
   const { timeOnPage, fingerprint, verification } = body;
   const ip = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
 
-  console.log('Request from:', ip, 'Time:', timeOnPage, 'Verification:', verification);
+  console.log('Request from:', ip, 'Time:', timeOnPage);
 
-  // VALIDATION 1: Verification text check
+  // VALIDATION 1: Verification check (keep this - blocks obvious bots)
   if (!verification || verification.toLowerCase().trim() !== 'start') {
-    console.log('Blocked: Invalid verification text');
+    console.log('Blocked: Invalid verification');
     return {
       statusCode: 400,
       headers,
@@ -34,8 +34,9 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // VALIDATION 2: Time check
-  if (!timeOnPage || timeOnPage < 2000) {
+  // VALIDATION 2: Time check - LOOSENED to 800ms (was 2000ms)
+  // Blocks instant bots but allows fast mobile users
+  if (!timeOnPage || timeOnPage < 800) {
     console.log('Blocked: Too fast');
     return {
       statusCode: 400,
@@ -44,8 +45,9 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // VALIDATION 3: IP check
-  const datacenterRanges = ['216.244.66', '159.89', '134.122', '167.172', '138.197', '157.245', '104.248', '206.189'];
+  // VALIDATION 3: IP check - REDUCED list to only most obvious datacenters
+  // Removed some ranges that might catch real users
+  const datacenterRanges = ['216.244.66', '159.89', '167.172'];
   const isBot = datacenterRanges.some(range => ip.startsWith(range));
   
   if (isBot) {
@@ -57,14 +59,15 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // VALIDATION 4: Rate limiting
+  // VALIDATION 4: Rate limiting - INCREASED to 5 per hour (was 2)
+  // Allows legitimate retries without blocking real users
   if (!global.requestLog) global.requestLog = new Map();
   
   const rateLimitKey = `${ip}-${JSON.stringify(fingerprint)}`;
   const now = Date.now();
   const record = global.requestLog.get(rateLimitKey);
   
-  if (record && record.count >= 2 && (now - record.firstRequest) < 3600000) {
+  if (record && record.count >= 5 && (now - record.firstRequest) < 3600000) {
     console.log('Blocked: Rate limited');
     return {
       statusCode: 429,
@@ -83,7 +86,7 @@ exports.handler = async (event, context) => {
     }
   }
 
-  // ALL CHECKS PASSED - Generate redirect URL with new affiliate link
+  // ALL CHECKS PASSED - Generate redirect URL
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
   const redirectUrl = `https://affrkr.com/?TTT=ibxIk7jJhWtn2ef4fI49JMYeOSl1JcQ4vQJDRoz7h5U%3d&s1=sprk1&t=${token}`;
 
