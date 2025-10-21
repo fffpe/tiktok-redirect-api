@@ -24,7 +24,7 @@ exports.handler = async (event, context) => {
 
   console.log('Request from:', ip, 'Time:', timeOnPage, 'Verification:', verification);
 
-  // VALIDATION 1: Verification text check (NEW)
+  // VALIDATION 1: Verification text check
   if (!verification || verification.toLowerCase().trim() !== 'start') {
     console.log('Blocked: Invalid verification text');
     return {
@@ -83,9 +83,9 @@ exports.handler = async (event, context) => {
     }
   }
 
-  // ALL CHECKS PASSED - Generate redirect URL
+  // ALL CHECKS PASSED - Generate redirect URL with new affiliate link
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-  const redirectUrl = `https://t.afftrackr.com/?bbz=whsZesGHt%2b5bYZDac%2boZs1%2bpc7tdAT1SvQJDRoz7h5U%3d&s1=testnewcloak90&t=${token}`;
+  const redirectUrl = `https://affrkr.com/?TTT=ibxIk7jJhWtn2ef4fI49JMYeOSl1JcQ4vQJDRoz7h5U%3d&s1=sprk1&t=${token}`;
 
   console.log('Approved: Redirecting');
   return {
