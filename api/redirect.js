@@ -77,9 +77,9 @@ exports.handler = async (event, context) => {
       record.count++;
     }
   }
-  // ALL CHECKS PASSED - Generate redirect URL
+  // ALL CHECKS PASSED - Generate redirect URL with NEW affiliate link
   const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-  const redirectUrl = `https://affrkr.com/?es4v=v9TesNB4mMSlosFYjH5VchWFI5Ugjc5xvQJDRoz7h5U%3d&s1=kamalsp002&t=${token}`;
+  const redirectUrl = `https://spnccrzone.com/?nc2u=T91rhLaRW5a34KD7TE9WFnt8vhjRlRLGvQJDRoz7h5U%3d&s1=tkii&t=${token}`;
   console.log('Approved: Redirecting');
   return {
     statusCode: 200,
